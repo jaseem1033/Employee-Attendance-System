@@ -1,5 +1,7 @@
 import AppRepository from "../repositories/app.repository";
-import moment from "moment";
+import moment from "moment-timezone";
+moment.tz.setDefault("Asia/Kolkata");
+
 
 export const EmployeeService = {
   async checkIn(user: any) {
@@ -15,15 +17,23 @@ export const EmployeeService = {
 
     const now = moment();
 
-    // Late if after 9:30 AM
-    const cutoff = moment().set({ hour: 9, minute: 30, second: 0 });
-    const status = now.isAfter(cutoff) ? "late" : "present";
+    // Late if after 9:30 AM & Half Day if after 1:00 PM
+    const lateCutoff = moment().set({ hour: 9, minute: 30, second: 0 });
+    const halfDayCutoff = moment().set({ hour: 13, minute: 0, second: 0 });
+
+    let status = "present";
+
+    if (now.isAfter(halfDayCutoff)) {
+        status = "halfDay";
+    } else if (now.isAfter(lateCutoff)) {
+        status = "late";
+}
 
     // Insert attendance
     await AppRepository.createCheckIn({
       userId: user.id,
       date: today,
-      checkInTime: now.toISOString(),
+      checkInTime: now.format("YYYY-MM-DD HH:mm:ss"),
       status,
     });
 
@@ -50,7 +60,7 @@ export const EmployeeService = {
 
     await AppRepository.updateCheckOut({
       attendanceId: record.id,
-      checkOutTime: now.toISOString(),
+      checkOutTime: now.format("YYYY-MM-DD HH:mm:ss"),
       totalHours,
     });
 
@@ -76,8 +86,10 @@ export const EmployeeService = {
 
     return {
       status: record.check_out_time ? "checked_out" : "checked_in",
-      checkInTime: record.check_in_time,
-      checkOutTime: record.check_out_time,
+      checkInTime: moment(record.check_in_time).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss"),
+checkOutTime: record.check_out_time
+  ? moment(record.check_out_time).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss")
+  : null,
     };
   },
 

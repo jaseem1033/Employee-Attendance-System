@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { EmployeeService } from "./employee.service";
+import moment from "moment-timezone";
+
 
 export const checkIn = async (req: Request, res: Response) => {
   try {
@@ -25,7 +27,17 @@ export const myHistory = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
     const history = await EmployeeService.myHistory(user.id);
-    return res.json(history);
+    const formatted = history.map((item: any) => ({
+  ...item,
+  check_in_time: item.check_in_time
+    ? moment(item.check_in_time).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss")
+    : null,
+  check_out_time: item.check_out_time
+    ? moment(item.check_out_time).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss")
+    : null,
+}));
+
+return res.json(formatted);
   } catch (err: any) {
     return res.status(400).json({ error: err.message });
   }
