@@ -26,4 +26,11 @@ export const managerOnly = (req: any, res: any, next: any) => {
   }
   next();
 };
+export const employeeOnly = (req: any, res: any, next: any) => {
+  if (req.user.role !== "employee") {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  next();
+};
+
 
