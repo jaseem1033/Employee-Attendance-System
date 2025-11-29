@@ -1,0 +1,19 @@
+# Backend node modules
+backend/node_modules/
+
+# Frontend node modules
+frontend/node_modules/
+
+# Env files
+backend/.env
+frontend/.env
+
+# Build folders
+backend/dist/
+frontend/dist/
+
+# macOS junk
+.DS_Store
+
+# Prisma (if used)
+backend/.prisma/
