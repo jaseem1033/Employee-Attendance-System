@@ -108,6 +108,99 @@ export const AppRepository = {
   async findAttendanceById(id: number) {
     const res = await pool.query(`SELECT * FROM attendance WHERE id = $1`, [id]);
     return res.rows[0];
+  },
+
+  async getEmployeesByDepartment(department: string) {
+  const res = await pool.query(
+    `SELECT id, name, email, role, employee_id, department 
+     FROM users 
+     WHERE department = $1 AND role = 'employee'
+     ORDER BY name ASC`,
+    [department]
+  );
+  return res.rows;
+  },
+  async getAttendanceByEmployeeId(empId: number) {
+  const res = await pool.query(
+    `SELECT a.*, u.name, u.employee_id 
+     FROM attendance a
+     JOIN users u ON u.id = a.user_id
+     WHERE user_id = $1
+     ORDER BY date DESC`,
+    [empId]
+  );
+  return res.rows;
+  },
+  async getTodayTeamStatus(department: string, today: string) {
+  const res = await pool.query(
+    `SELECT 
+        u.id,
+        u.name,
+        u.employee_id,
+        u.department,
+        a.status,
+        a.check_in_time,
+        a.check_out_time
+     FROM users u
+     LEFT JOIN attendance a 
+        ON a.user_id = u.id AND a.date = $1
+     WHERE u.department = $2 AND u.role = 'employee'
+     ORDER BY u.name ASC`,
+    [today, department]
+  );
+  return res.rows;
+  },
+  async getDepartmentSummary(department: string, start: string, end: string) {
+  const res = await pool.query(
+  `SELECT 
+      u.id AS user_id,
+      u.name,
+      u.employee_id,
+      a.date,
+      a.status,
+      a.check_in_time,
+      a.check_out_time,
+      a.total_hours
+    FROM attendance a
+    JOIN users u ON a.user_id = u.id
+    WHERE u.department = $1
+      AND a.date BETWEEN $2 AND $3
+    ORDER BY a.date DESC`,
+  [department, start, end]
+);
+
+  return res.rows;
+  },
+  async getDepartmentAttendanceForCSV(department: string, start: string, end: string) {
+  const res = await pool.query(
+  `SELECT 
+      u.id AS user_id,
+      u.name,
+      u.employee_id,
+      a.date,
+      a.status,
+      a.check_in_time,
+      a.check_out_time,
+      a.total_hours
+    FROM attendance a
+    JOIN users u ON a.user_id = u.id
+    WHERE u.department = $1
+      AND a.date BETWEEN $2 AND $3
+    ORDER BY a.date DESC`,
+  [department, start, end]
+);
+return res.rows;
+
+  },
+  async findEmployeeInDepartment(empId: number, department: string) {
+  const res = await pool.query(
+    `SELECT id, name, employee_id, department 
+     FROM users 
+     WHERE id = $1 AND department = $2 AND role = 'employee'
+     LIMIT 1`,
+    [empId, department]
+  );
+  return res.rows[0];
   }
 };
 

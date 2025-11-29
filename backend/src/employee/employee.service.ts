@@ -1,12 +1,15 @@
 import AppRepository from "../repositories/app.repository";
 import moment from "moment-timezone";
+
 moment.tz.setDefault("Asia/Kolkata");
 
-
 export const EmployeeService = {
+  
+  // -------------------- CHECK IN --------------------
   async checkIn(user: any) {
 
-    const today = moment().format("YYYY-MM-DD");
+    // Store today's date in strict IST to avoid UTC shift
+    const today = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
 
     // Check if already checked in today
     const existing = await AppRepository.findTodayAttendanceByUser(
@@ -15,19 +18,19 @@ export const EmployeeService = {
     );
     if (existing) throw new Error("Already checked in today");
 
-    const now = moment();
+    const now = moment().tz("Asia/Kolkata");
 
-    // Late if after 9:30 AM & Half Day if after 1:00 PM
-    const lateCutoff = moment().set({ hour: 9, minute: 30, second: 0 });
-    const halfDayCutoff = moment().set({ hour: 13, minute: 0, second: 0 });
+    // Cutoffs (IST)
+    const lateCutoff = moment().tz("Asia/Kolkata").set({ hour: 9, minute: 30, second: 0 });
+    const halfDayCutoff = moment().tz("Asia/Kolkata").set({ hour: 13, minute: 0, second: 0 });
 
     let status = "present";
 
     if (now.isAfter(halfDayCutoff)) {
-        status = "halfDay";
+      status = "halfDay";
     } else if (now.isAfter(lateCutoff)) {
-        status = "late";
-}
+      status = "late";
+    }
 
     // Insert attendance
     await AppRepository.createCheckIn({
@@ -37,11 +40,13 @@ export const EmployeeService = {
       status,
     });
 
-    return; // No return body for POST => 204
+    return; // 204
   },
 
+  // -------------------- CHECK OUT --------------------
   async checkOut(user: any) {
-    const today = moment().format("YYYY-MM-DD");
+
+    const today = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
 
     const record = await AppRepository.findTodayAttendanceByUser(
       user.id,
@@ -51,8 +56,8 @@ export const EmployeeService = {
     if (!record) throw new Error("You have not checked in today");
     if (record.check_out_time) throw new Error("Already checked out today");
 
-    const now = moment();
-    const checkInTime = moment(record.check_in_time);
+    const now = moment().tz("Asia/Kolkata");
+    const checkInTime = moment(record.check_in_time).tz("Asia/Kolkata");
 
     const totalHours = parseFloat(
       now.diff(checkInTime, "hours", true).toFixed(2)
@@ -67,12 +72,16 @@ export const EmployeeService = {
     return; // 204
   },
 
+  // -------------------- HISTORY --------------------
   async myHistory(userId: number) {
     return await AppRepository.getAttendanceHistoryByUser(userId);
   },
 
+  // -------------------- TODAY STATUS --------------------
   async todayStatus(userId: number) {
-    const today = moment().format("YYYY-MM-DD");
+
+    const today = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
+
     const record = await AppRepository.findTodayAttendanceByUser(
       userId,
       today
@@ -81,21 +90,28 @@ export const EmployeeService = {
     if (!record) {
       return {
         status: "not_checked_in",
+        checkInTime: null,
+        checkOutTime: null,
       };
     }
 
     return {
       status: record.check_out_time ? "checked_out" : "checked_in",
-      checkInTime: moment(record.check_in_time).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss"),
-checkOutTime: record.check_out_time
-  ? moment(record.check_out_time).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss")
-  : null,
+      checkInTime: moment(record.check_in_time)
+        .tz("Asia/Kolkata")
+        .format("YYYY-MM-DD HH:mm:ss"),
+      checkOutTime: record.check_out_time
+        ? moment(record.check_out_time)
+            .tz("Asia/Kolkata")
+            .format("YYYY-MM-DD HH:mm:ss")
+        : null,
     };
   },
 
+  // -------------------- MONTHLY SUMMARY --------------------
   async monthlySummary(userId: number) {
-    const start = moment().startOf("month").format("YYYY-MM-DD");
-    const end = moment().endOf("month").format("YYYY-MM-DD");
+    const start = moment().tz("Asia/Kolkata").startOf("month").format("YYYY-MM-DD");
+    const end = moment().tz("Asia/Kolkata").endOf("month").format("YYYY-MM-DD");
 
     const summary = await AppRepository.getMonthlySummaryByUser(
       userId,
@@ -116,4 +132,29 @@ checkOutTime: record.check_out_time
 
     return result;
   },
+  async dashboard(userId: number) {
+  const todayStatus = await this.todayStatus(userId);
+  const monthlySummary = await this.monthlySummary(userId);
+  const history = await this.myHistory(userId);
+
+  // Format history date & time properly
+  const formattedHistory = history.map((item: any) => ({
+    date: moment(item.date).tz("Asia/Kolkata").format("YYYY-MM-DD"),
+    status: item.status,
+    checkInTime: item.check_in_time
+      ? moment(item.check_in_time).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss")
+      : null,
+    checkOutTime: item.check_out_time
+      ? moment(item.check_out_time).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss")
+      : null,
+    totalHours: item.total_hours
+  }));
+
+  return {
+    todayStatus,
+    monthlySummary,
+    history: formattedHistory
+  };
+ }
+
 };

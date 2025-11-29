@@ -20,3 +20,10 @@ export default function authMiddleware(req: Request, res: Response, next: NextFu
     return res.status(401).json({ error: "Invalid token" });
   }
 }
+export const managerOnly = (req: any, res: any, next: any) => {
+  if (req.user.role !== "manager") {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  next();
+};
+

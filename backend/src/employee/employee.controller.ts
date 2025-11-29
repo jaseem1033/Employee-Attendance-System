@@ -23,25 +23,41 @@ export const checkOut = async (req: Request, res: Response) => {
   }
 };
 
+
 export const myHistory = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
-    const history = await EmployeeService.myHistory(user.id);
-    const formatted = history.map((item: any) => ({
-  ...item,
-  check_in_time: item.check_in_time
-    ? moment(item.check_in_time).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss")
-    : null,
-  check_out_time: item.check_out_time
-    ? moment(item.check_out_time).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss")
-    : null,
-}));
 
-return res.json(formatted);
+    const history = await EmployeeService.myHistory(user.id);
+
+    const formatted = history.map((item: any) => ({
+      date: moment(item.date)
+        .tz("Asia/Kolkata")
+        .format("YYYY-MM-DD"),
+
+      status: item.status,
+
+      check_in_time: item.check_in_time
+        ? moment(item.check_in_time)
+            .tz("Asia/Kolkata")
+            .format("YYYY-MM-DD HH:mm:ss")
+        : null,
+
+      check_out_time: item.check_out_time
+        ? moment(item.check_out_time)
+            .tz("Asia/Kolkata")
+            .format("YYYY-MM-DD HH:mm:ss")
+        : null,
+
+      total_hours: item.total_hours,
+    }));
+
+    return res.json(formatted);
   } catch (err: any) {
     return res.status(400).json({ error: err.message });
   }
 };
+
 
 export const mySummary = async (req: Request, res: Response) => {
   try {
@@ -62,3 +78,5 @@ export const todayStatus = async (req: Request, res: Response) => {
     return res.status(400).json({ error: err.message });
   }
 };
+
+
