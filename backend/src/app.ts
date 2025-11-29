@@ -6,6 +6,7 @@ dotenv.config();
 import authRoutes from "./auth/auth.routes";
 import employeeRoutes from "./employee/employee.routes";
 import managerRoutes from "./manager/manager.routes";
+import dashboardRoutes from "./dashboard/dashboard.routes";
 
 const app = express();
 app.use(cors({ origin: process.env.CLIENT_URL || "*" }));
@@ -13,8 +14,9 @@ app.use(express.json());
 
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
 
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/employee", employeeRoutes);
-app.use("/api/manager", managerRoutes);
+app.use("/api/attendance", employeeRoutes);
+app.use("/api/attendance", managerRoutes);
 
 export default app;

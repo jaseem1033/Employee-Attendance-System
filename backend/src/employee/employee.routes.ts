@@ -1,7 +1,6 @@
 import express from "express";
 import authMiddleware from "../middlewares/auth.middleware";
 import employeeOnly from "../middlewares/auth.middleware";
-import { getDashboard } from "./employee.controller";
 import {
   checkIn,
   checkOut,
@@ -11,7 +10,6 @@ import {
 } from "./employee.controller";
 
 const router = express.Router();
-router.get("/dashboard", authMiddleware, employeeOnly, getDashboard);
 
 router.post("/checkin", authMiddleware, checkIn);
 router.post("/checkout", authMiddleware, checkOut);

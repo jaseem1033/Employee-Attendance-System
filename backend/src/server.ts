@@ -1,6 +1,7 @@
 import app from "./app";
 import pool from "./utils/db";
 
+
 const PORT = process.env.PORT || 5000;
 
 async function start() {

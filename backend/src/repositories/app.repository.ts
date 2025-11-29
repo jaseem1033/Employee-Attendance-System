@@ -153,23 +153,17 @@ export const AppRepository = {
   async getDepartmentSummary(department: string, start: string, end: string) {
   const res = await pool.query(
   `SELECT 
-      u.id AS user_id,
-      u.name,
-      u.employee_id,
-      a.date,
       a.status,
-      a.check_in_time,
-      a.check_out_time,
-      a.total_hours
-    FROM attendance a
-    JOIN users u ON a.user_id = u.id
-    WHERE u.department = $1
-      AND a.date BETWEEN $2 AND $3
-    ORDER BY a.date DESC`,
+      COUNT(*) AS count
+   FROM attendance a
+   JOIN users u ON a.user_id = u.id
+   WHERE u.department = $1
+     AND a.date BETWEEN $2 AND $3
+   GROUP BY a.status`,
   [department, start, end]
 );
 
-  return res.rows;
+return res.rows;
   },
   async getDepartmentAttendanceForCSV(department: string, start: string, end: string) {
   const res = await pool.query(

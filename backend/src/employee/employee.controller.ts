@@ -79,14 +79,6 @@ export const todayStatus = async (req: Request, res: Response) => {
   }
 };
 
-export const getDashboard = async (req: Request, res: Response) => {
-  try {
-    const user = (req as any).user;
-    const data = await EmployeeService.dashboard(user.id);
-    return res.json(data);
-  } catch (err: any) {
-    return res.status(400).json({ error: err.message });
-  }
-};
+
 
 
