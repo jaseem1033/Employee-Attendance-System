@@ -15,7 +15,7 @@ const router = express.Router();
 
 router.get("/all", authMiddleware, roleMiddleware("manager"), getEmployees);
 router.get("/employee/:id", authMiddleware, roleMiddleware("manager"), getEmployeeAttendance);
-router.get("/today", authMiddleware, roleMiddleware("manager"), getTodayTeamStatus);
+router.get("/today-status", authMiddleware, roleMiddleware("manager"), getTodayTeamStatus);
 router.get("/summary", authMiddleware, roleMiddleware("manager"), getSummary);
 router.get("/export", authMiddleware, roleMiddleware("manager"), exportCSV);
 
