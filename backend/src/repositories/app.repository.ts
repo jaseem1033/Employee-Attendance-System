@@ -195,7 +195,22 @@ return res.rows;
     [empId, department]
   );
   return res.rows[0];
-  }
+  },
+  async getDepartmentWiseToday(today: string) {
+  const res = await pool.query(
+    `SELECT 
+        u.department,
+        COUNT(CASE WHEN a.status IS NOT NULL THEN 1 END) AS present,
+        COUNT(CASE WHEN a.status IS NULL THEN 1 END) AS absent
+     FROM users u
+     LEFT JOIN attendance a 
+       ON u.id = a.user_id AND a.date = $1
+     GROUP BY u.department`,
+    [today]
+  );
+  return res.rows;
+}
+
 };
 
 export default AppRepository;
