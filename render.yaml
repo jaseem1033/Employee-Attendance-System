@@ -1,0 +1,38 @@
+# Render manifest for Employee Attendance System
+#
+# This manifest defines two services (backend web service and frontend static site)
+# and a managed Postgres database. It intentionally does NOT contain secret values.
+# After you connect this repo to Render, set the required secrets in the Render
+# dashboard (see `README_RENDER.md`).
+
+services:
+  - type: web
+    name: employee-attendance-backend
+    env: node
+    region: oregon
+    plan: free
+    root: backend
+    buildCommand: cd backend && npm ci && npm run build
+    startCommand: cd backend && npm start
+    healthCheckPath: /api/health
+
+  - type: static
+    name: employee-attendance-frontend
+    env: static
+    region: oregon
+    plan: free
+    root: frontend
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: frontend/dist
+
+databases:
+  - name: attendance-db
+    engine: postgres
+    plan: starter
+    region: oregon
+
+# Notes:
+# - Do NOT store secrets in this file. After Render creates the services, set
+#   `DATABASE_URL`, `JWT_SECRET`, `VITE_API_URL`, `CLIENT_URL`, and any other
+#   required variables in the Render dashboard.
+*** End Patch
