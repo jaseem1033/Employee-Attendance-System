@@ -114,7 +114,7 @@ export default function AttendanceHistory() {
   }, [createdAt])
 
   return (
-    <div>
+    <div className="calendar">
       <h2>Attendance History (Calendar)</h2>
 
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 12 }}>
@@ -129,58 +129,64 @@ export default function AttendanceHistory() {
         </select>
         <button onClick={nextMonth} className="btn btn-outline">›</button>
 
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <div style={{ width: 14, height: 14, background: '#10b981', borderRadius: 3 }} /> <small>Present</small>
-            <div style={{ width: 14, height: 14, background: '#ef4444', borderRadius: 3 }} /> <small>Absent</small>
-            <div style={{ width: 14, height: 14, background: '#fbbf24', borderRadius: 3 }} /> <small>Late</small>
-            <div style={{ width: 14, height: 14, background: '#fb923c', borderRadius: 3 }} /> <small>Half Day</small>
-          </div>
+        <div style={{ marginLeft: 'auto' }} className="legend">
+          <div className="legend-item"><span className="legend-swatch" style={{ background: '#10b981' }} /> <small>Present</small></div>
+          <div className="legend-item"><span className="legend-swatch" style={{ background: '#ef4444' }} /> <small>Absent</small></div>
+          <div className="legend-item"><span className="legend-swatch" style={{ background: '#fbbf24' }} /> <small>Late</small></div>
+          <div className="legend-item"><span className="legend-swatch" style={{ background: '#fb923c' }} /> <small>Half Day</small></div>
         </div>
       </div>
 
-      <div style={{ marginTop: 16 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6, textAlign: 'center' }}>
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
-            <div key={d} style={{ fontWeight: 600 }}>{d}</div>
-          ))}
+      <div className="calendar-grid" style={{ marginTop: 16 }}>
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+          <div key={d} className="calendar-weekday">{d}</div>
+        ))}
 
-          {loading && <div style={{ gridColumn: '1/-1' }}>Loading…</div>}
+        {loading && <div style={{ gridColumn: '1/-1' }}>Loading…</div>}
 
-          {!loading && days.map((d, i) => {
-            if (!d) return <div key={i} style={{ minHeight: 60 }} />
-            const item = mapping[d]
-            const beforeCreated = createdYMD && d < createdYMD
-            let state: string
-            if (beforeCreated) state = 'not-employed'
-            else if (item) {
-              const s = (item.status || '').toString().toLowerCase()
-              if (s.includes('late')) state = 'late'
-              else if (s.includes('half')) state = 'halfday'
-              else if (s.includes('present') || s.includes('checked')) state = 'present'
-              else state = s || 'present'
-            } else {
-              state = 'absent'
-            }
+        {!loading && days.map((d, i) => {
+          if (!d) return <div key={i} style={{ minHeight: 64 }} />
+          const item = mapping[d]
+          const beforeCreated = createdYMD && d < createdYMD
+          let state: string
+          if (beforeCreated) state = 'not-employed'
+          else if (item) {
+            const s = (item.status || '').toString().toLowerCase()
+            if (s.includes('late')) state = 'late'
+            else if (s.includes('half')) state = 'halfday'
+            else if (s.includes('present') || s.includes('checked')) state = 'present'
+            else state = s || 'present'
+          } else {
+            state = 'absent'
+          }
 
-            const color = statusColor(state)
+          const color = statusColor(state)
 
-            return (
-              <div key={d} onClick={() => { if (state !== 'not-employed') onSelectDay(d) }} style={{ minHeight: 60, borderRadius: 8, cursor: state === 'not-employed' ? 'default' : 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 8, background: '#fff', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ fontSize: 13 }}>{d.slice(-2)}</div>
-                  <div style={{ width: 12, height: 12, background: color, borderRadius: 3 }} />
-                </div>
-                <div style={{ fontSize: 12, color: '#6b7280' }}>{state === 'not-employed' ? '' : (item ? item.status : 'absent')}</div>
+          const isSelected = selectedDate === d
+
+          return (
+            <div
+              key={d}
+              role="button"
+              aria-pressed={isSelected}
+              aria-selected={isSelected}
+              tabIndex={state === 'not-employed' ? -1 : 0}
+              onClick={() => { if (state !== 'not-employed') onSelectDay(d) }}
+              onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && state !== 'not-employed') onSelectDay(d) }}
+              className={`calendar-cell ${state === 'not-employed' ? 'disabled' : ''} ${isSelected ? 'selected' : ''}`}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ fontSize: 13 }}>{d.slice(-2)}</div>
+                <div style={{ width: 12, height: 12, background: color, borderRadius: 3 }} />
               </div>
-            )
-          })}
-        </div>
+              <div style={{ fontSize: 12 }} className="muted">{state === 'not-employed' ? '' : (item ? item.status : 'absent')}</div>
+            </div>
+          )
+        })}
       </div>
 
-      <div style={{ marginTop: 18 }}>
+      <div className="details">
         {selectedDate ? (
-          <div style={{ padding: 12, border: '1px solid #eee', borderRadius: 8 }}>
+          <div className="details-panel card">
             <h4 style={{ marginTop: 0 }}>{selectedDate}</h4>
             {createdYMD && selectedDate < createdYMD ? (
               <div>Employee not employed on this date</div>
@@ -196,7 +202,7 @@ export default function AttendanceHistory() {
             )}
           </div>
         ) : (
-          <div style={{ color: '#6b7280' }}>Click a date to see details</div>
+          <div className="muted">Click a date to see details</div>
         )}
       </div>
     </div>

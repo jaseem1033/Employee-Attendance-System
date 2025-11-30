@@ -33,32 +33,19 @@ export default function Checkin() {
   return (
     <div style={{ position: 'relative', paddingTop: 28 }}>
       <Link to="/employee">
-        <button
-          className="nav-back"
-          style={{
-            position: 'absolute',
-            left: 8,
-            top: 0,
-            padding: '6px 10px',
-            borderRadius: 6,
-            border: '1px solid #ddd',
-            background: '#fff',
-            cursor: 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.06)'
-          }}
-        >
-          ← Back
-        </button>
+        <button className="nav-back">← Back</button>
       </Link>
 
-      <h2 style={{ textAlign: 'center' }}>Check In / Check Out</h2>
+      <div className="card" style={{ maxWidth: 640, margin: '12px auto', textAlign: 'center', paddingTop: 18 }}>
+        <h2 style={{ marginTop: 0 }}>Check In / Check Out</h2>
 
-      <div style={{ marginBottom: 12, textAlign: 'center' }}>
-        <button onClick={handleCheckIn}>Check In</button>
-        <button onClick={handleCheckOut} style={{ marginLeft: 8 }}>Check Out</button>
+        <div style={{ marginBottom: 12 }}>
+          <button className="btn btn-primary" onClick={handleCheckIn}>Check In</button>
+          <button className="btn btn-outline" style={{ marginLeft: 8 }} onClick={handleCheckOut}>Check Out</button>
+        </div>
+
+        {message && <div style={{ textAlign: 'center' }} className={message.toLowerCase().includes('error') ? '' : 'success'}>{message}</div>}
       </div>
-
-      {message && <div style={{ textAlign: 'center' }}>{message}</div>}
     </div>
   )
 }

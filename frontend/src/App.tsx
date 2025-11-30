@@ -23,7 +23,7 @@ export default function App() {
   return (
     <div>
       {showNav && <NavBar />}
-      <main style={{ padding: 20, maxWidth: 1100, margin: '32px auto' }}>
+      <main className="app-main">
         <Routes>
           <Route path="/" element={<Navigate to={auth.user ? (auth.user.role === 'manager' ? '/manager' : '/employee') : '/login'} replace />} />
           <Route

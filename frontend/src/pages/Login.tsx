@@ -102,7 +102,7 @@ export default function Login() {
             <button className="btn btn-primary" type="submit" disabled={auth.loading || Object.keys(computeErrors()).length > 0} onClick={() => setSubmitted(true)}>
               {auth.loading ? 'Signing in...' : 'Sign in'}
             </button>
-            <button type="button" className="btn-outline" onClick={() => navigate('/register')}>Register</button>
+            <button type="button" className="btn btn-outline" onClick={() => navigate('/register')}>Register</button>
           </div>
         </form>
 

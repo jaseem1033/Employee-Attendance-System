@@ -4,6 +4,101 @@ button { padding: 8px 12px }
 table, th, td { border: 1px solid #ddd; padding: 8px }
 th { background: #f8f8f8 }
 
+/* App layout */
+.app-main { padding: 28px; max-width: 1100px; margin: 36px auto; }
+
+/* Header / Nav */
+.site-header { background: #fff; border-bottom: 1px solid #eef2f7; padding: 14px 22px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 6px rgba(16,24,40,0.03); position: sticky; top: 0; z-index: 40 }
+.site-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #0f1724 }
+.brand-badge { width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(180deg,#2563eb,#4f46e5); box-shadow: 0 4px 18px rgba(79,70,229,0.08) }
+.brand-logo { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; box-shadow: 0 4px 18px rgba(79,70,229,0.08); }
+.site-title { font-weight: 700; font-size: 16px }
+.nav-links { display: flex; align-items: center; gap: 14px }
+.nav-link { color: #111827; text-decoration: none; padding: 8px 10px; border-radius: 8px; font-weight: 600 }
+.nav-link:hover { background: #f8fafc }
+.profile-pill { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0f1724 }
+.avatar { width: 36px; height: 36px; border-radius: 999px; background: #eef2ff; color: #2563eb; display:flex; align-items:center; justify-content:center; font-weight:700 }
+.logout-btn { background: #ef4444; color: #fff; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer }
+
+/* Cards and panels */
+.card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 6px 20px rgba(31,45,61,0.04); }
+
+/* Buttons */
+.btn { border: none; border-radius: 8px; padding: 10px 14px; cursor: pointer; font-weight: 600 }
+.btn-primary { background: #2563eb; color: #fff }
+.btn-outline { background: transparent; border: 1px solid #2563eb; color: #2563eb }
+
+/* Calendar styles */
+.calendar { margin-top: 16px }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center }
+.calendar-weekday { font-weight: 700 }
+.calendar-cell { min-height: 64px; border-radius: 10px; cursor: pointer; display:flex; flex-direction:column; justify-content:space-between; padding:10px; background:#fff; box-shadow: 0 4px 14px rgba(16,24,40,0.03) }
+.calendar-cell.disabled { cursor: default; opacity: 0.6; background: #fafafa }
+.calendar-cell:hover { transform: translateY(-3px); transition: transform 120ms ease; }
+.calendar-cell.selected { outline: 2px solid rgba(37,99,235,0.14); box-shadow: 0 8px 28px rgba(37,99,235,0.08); transform: translateY(-4px); }
+.calendar-cell.disabled:hover { transform: none }
+
+/* subtle pattern for disabled (pre-employment) cells on larger screens */
+@media (min-width: 640px) {
+	.calendar-cell.disabled { background-image: linear-gradient(135deg, rgba(0,0,0,0.01) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.01) 50%, rgba(0,0,0,0.01) 75%, transparent 75%, transparent); background-size: 8px 8px; }
+}
+.legend { display:flex; gap:12px; align-items:center }
+.legend-item { display:flex; gap:8px; align-items:center; font-size:13px }
+.legend-swatch { width:14px; height:14px; border-radius:3px }
+
+/* Details panel */
+.details { margin-top: 18px }
+.details-panel { padding: 14px; border-radius: 10px; border: 1px solid #eef2f7; background: #fff }
+
+/* Utilities */
+.muted { color: #6b7280 }
+.small { font-size: 13px }
+
+/* small utilities */
+.nav-back { position: absolute; left: 8px; top: 8px; padding: 8px 10px; border-radius: 8px; border: 1px solid #e6e9ef; background: #fff; cursor: pointer; box-shadow: 0 2px 6px rgba(16,24,40,0.04) }
+.success { color: #065f46; background: #ecfdf5; padding: 8px 10px; border-radius: 8px; }
+
+/* Employee Dashboard styles */
+.dashboard { display:flex; flex-direction:column; gap:18px }
+.dashboard-header { display:flex; justify-content:space-between; align-items:center; gap:12px }
+.dashboard-title { font-size:20px; font-weight:800; color:#0f1724 }
+.dashboard-sub { color:#6b7280 }
+
+.stats-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:16px }
+.stat-card { background: linear-gradient(180deg,#fff,#fbfdff); border-radius:12px; padding:16px; box-shadow: 0 8px 24px rgba(15,23,36,0.04); border:1px solid rgba(15,23,36,0.04); display:flex; gap:12px; align-items:center }
+.stat-icon { width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:18px }
+.stat-content { display:flex; flex-direction:column }
+.stat-label { font-size:13px; color:#6b7280 }
+.stat-value { font-size:22px; font-weight:800; color:#0f1724 }
+
+.stat-present .stat-icon { background: linear-gradient(180deg,#ecfdf3,#d1fae5); color:#064e3b }
+.stat-absent .stat-icon { background: linear-gradient(180deg,#fff5f5,#fff1f0); color:#7f1d1d }
+.stat-late .stat-icon { background: linear-gradient(180deg,#fff7ed,#fff3e0); color:#78350f }
+.stat-hours .stat-icon { background: linear-gradient(180deg,#eff6ff,#eaf2ff); color:#1e3a8a }
+
+.actions { display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+.actions .btn { min-width:140px }
+.btn-ghost { background:transparent; border:none; color:#2563eb; font-weight:700; cursor:pointer }
+
+.history-card { padding:12px }
+.history-table { width:100%; border-collapse: collapse }
+.history-table th { text-align:left; padding:12px; background:#f8fafc; color:#0f1724; font-weight:700 }
+.history-table td { padding:12px; border-top:1px solid #f1f5f9 }
+.history-table tbody tr:nth-child(odd) { background:#ffffff }
+.history-table tbody tr:nth-child(even) { background:#fbfdff }
+
+.status-badge { display:inline-block; padding:6px 8px; border-radius:999px; font-size:12px; font-weight:700; color:#fff }
+.status-present { background:#10b981 }
+.status-absent { background:#ef4444 }
+.status-late { background:#fb923c }
+
+@media (max-width:640px) {
+	.stat-card { padding:12px }
+	.stat-icon { width:40px; height:40px }
+	.stat-value { font-size:18px }
+}
+
+
 /* Auth / Login styles */
 .auth-page { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 64px); background: linear-gradient(180deg, #f5f7fb 0%, #ffffff 100%); padding: 24px }
 .auth-card { width: 100%; max-width: 420px; background: #fff; border-radius: 10px; box-shadow: 0 8px 30px rgba(31,45,61,0.08); padding: 28px }

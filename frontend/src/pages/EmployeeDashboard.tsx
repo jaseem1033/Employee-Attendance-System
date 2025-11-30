@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import DashboardCard from '../components/DashboardCard'
 import { useAppSelector } from '../store/store'
 import { Link } from 'react-router-dom'
 import client from '../api/client'
@@ -58,102 +57,142 @@ export default function EmployeeDashboard() {
   }, [dashboard, loadingDashboard])
 
   return (
-    <div>
-      <h2 style={{ marginTop: 0 }}>Employee Dashboard</h2>
-      <p style={{ color: '#6b7280' }}>Welcome back{auth.user ? `, ${auth.user.name}` : ''} — here's a quick summary.</p>
+    <div className="dashboard">
+      <div className="dashboard-header">
+        <div>
+          <div className="dashboard-title">Employee Dashboard</div>
+          <div className="dashboard-sub muted">Welcome back{auth.user ? `, ${auth.user.name}` : ''}</div>
+        </div>
 
-      <div style={{ display: 'flex', gap: 16, marginTop: 18, flexWrap: 'wrap' }}>
-        <DashboardCard title="Today's status" value={stats.todayStatus} />
-        <DashboardCard title="Present this month" value={stats.present} />
-        <DashboardCard title="Absent this month" value={stats.absent} />
-        <DashboardCard title="Late this month" value={stats.late} />
-        <DashboardCard title="Total hours (month)" value={stats.totalHours} />
+        <div className="actions">
+          <Link to="/employee/checkin"><button className="btn btn-primary">Mark Attendance</button></Link>
+          <button
+            className="btn btn-primary"
+            onClick={async () => {
+              setLoading(true)
+              try {
+                await client.post('/attendance/checkin', {})
+                setMessage('Checked in')
+                // refresh dashboard after successful checkin
+                await loadDashboard()
+              } catch (err: any) {
+                const apiMsg = err?.response?.data?.error || err?.response?.data?.message || ''
+                const lower = (apiMsg || '').toLowerCase()
+                if (lower.includes('already checked in')) setMessage('You have already checked in today')
+                else setMessage(apiMsg || 'Error')
+              } finally {
+                setLoading(false)
+                setTimeout(() => setMessage(''), 3500)
+              }
+            }}
+            disabled={loading}
+          >
+            Quick Check In
+          </button>
+
+          <button
+            className="btn btn-primary"
+            onClick={async () => {
+              setLoading(true)
+              try {
+                await client.post('/attendance/checkout', {})
+                setMessage('Checked out')
+                // refresh dashboard after successful checkout
+                await loadDashboard()
+              } catch (err: any) {
+                const apiMsg = err?.response?.data?.error || err?.response?.data?.message || ''
+                const lower = (apiMsg || '').toLowerCase()
+                if (lower.includes('already checked out')) setMessage('You have already checked out today')
+                else if (lower.includes('have not checked in')) setMessage('You have not checked in today')
+                else setMessage(apiMsg || 'Error')
+              } finally {
+                setLoading(false)
+                setTimeout(() => setMessage(''), 3500)
+              }
+            }}
+            disabled={loading}
+          >
+            Quick Check Out
+          </button>
+
+          <Link to="/employee/history"><button className="btn btn-primary">View My Attendance History</button></Link>
+        </div>
       </div>
 
-      <div style={{ marginTop: 26, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-        <Link to="/employee/checkin"><button className="btn btn-primary">Mark Attendance</button></Link>
-        <button
-          className="btn btn-primary"
-          onClick={async () => {
-            setLoading(true)
-            try {
-              await client.post('/attendance/checkin', {})
-              setMessage('Checked in')
-              // refresh dashboard after successful checkin
-              await loadDashboard()
-            } catch (err: any) {
-              const apiMsg = err?.response?.data?.error || err?.response?.data?.message || ''
-              const lower = (apiMsg || '').toLowerCase()
-              if (lower.includes('already checked in')) setMessage('You have already checked in today')
-              else setMessage(apiMsg || 'Error')
-            } finally {
-              setLoading(false)
-              setTimeout(() => setMessage(''), 3500)
-            }
-          }}
-          disabled={loading}
-        >
-          Quick Check In
-        </button>
+      <div className="stats-grid">
+        <div className="stat-card stat-present">
+          <div className="stat-icon">✓</div>
+          <div className="stat-content">
+            <div className="stat-label">Today's status</div>
+            <div className="stat-value">{stats.todayStatus}</div>
+          </div>
+        </div>
 
-        <button
-          className="btn btn-outline"
-          onClick={async () => {
-            setLoading(true)
-            try {
-              await client.post('/attendance/checkout', {})
-              setMessage('Checked out')
-              // refresh dashboard after successful checkout
-              await loadDashboard()
-            } catch (err: any) {
-              const apiMsg = err?.response?.data?.error || err?.response?.data?.message || ''
-              const lower = (apiMsg || '').toLowerCase()
-              if (lower.includes('already checked out')) setMessage('You have already checked out today')
-              else if (lower.includes('have not checked in')) setMessage('You have not checked in today')
-              else setMessage(apiMsg || 'Error')
-            } finally {
-              setLoading(false)
-              setTimeout(() => setMessage(''), 3500)
-            }
-          }}
-          disabled={loading}
-        >
-          Quick Check Out
-        </button>
+        <div className="stat-card stat-present">
+          <div className="stat-icon">●</div>
+          <div className="stat-content">
+            <div className="stat-label">Present this month</div>
+            <div className="stat-value">{stats.present}</div>
+          </div>
+        </div>
 
-        <Link to="/employee/history"><button className="btn btn-outline">View My Attendance History</button></Link>
+        <div className="stat-card stat-absent">
+          <div className="stat-icon">✕</div>
+          <div className="stat-content">
+            <div className="stat-label">Absent this month</div>
+            <div className="stat-value">{stats.absent}</div>
+          </div>
+        </div>
+
+        <div className="stat-card stat-late">
+          <div className="stat-icon">!</div>
+          <div className="stat-content">
+            <div className="stat-label">Late this month</div>
+            <div className="stat-value">{stats.late}</div>
+          </div>
+        </div>
+
+        <div className="stat-card stat-hours">
+          <div className="stat-icon">🕒</div>
+          <div className="stat-content">
+            <div className="stat-label">Total hours (month)</div>
+            <div className="stat-value">{stats.totalHours}</div>
+          </div>
+        </div>
       </div>
 
       {message && (
-        <div style={{ marginTop: 12, color: message.toLowerCase().includes('error') ? 'red' : 'green' }}>{message}</div>
+        <div style={{ marginTop: 4, color: message.toLowerCase().includes('error') ? 'red' : 'green' }}>{message}</div>
       )}
 
-      <div style={{ marginTop: 24 }}>
+      <div>
         <h3 style={{ marginBottom: 8 }}>Recent History</h3>
         {loadingDashboard && <div>Loading history…</div>}
         {!loadingDashboard && dashboard && Array.isArray(dashboard.history) && (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Check In</th>
-                <th>Check Out</th>
-                <th>Total Hours</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dashboard.history.map((r: any) => (
-                <tr key={r.date + (r.checkInTime || r.check_in_time || '')}>
-                  <td>{r.date}</td>
-                  <td>{r.status}</td>
-                  <td>{r.checkInTime ?? r.check_in_time}</td>
-                  <td>{r.checkOutTime ?? r.check_out_time}</td>
-                  <td>{r.totalHours ?? r.total_hours}</td>
+          <div className="card history-card">
+            <table className="history-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Check In</th>
+                  <th>Check Out</th>
+                  <th>Total Hours</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {dashboard.history.map((r: any) => (
+                  <tr key={r.date + (r.checkInTime || r.check_in_time || '')}>
+                    <td>{r.date}</td>
+                    <td>{r.status}</td>
+                    <td>{r.checkInTime ?? r.check_in_time}</td>
+                    <td>{r.checkOutTime ?? r.check_out_time}</td>
+                    <td>{r.totalHours ?? r.total_hours}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
