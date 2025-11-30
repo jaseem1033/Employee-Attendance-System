@@ -3,3 +3,20 @@ input, select { display: block; padding: 8px; margin: 6px 0 12px 0; width: 100%;
 button { padding: 8px 12px }
 table, th, td { border: 1px solid #ddd; padding: 8px }
 th { background: #f8f8f8 }
+
+/* Auth / Login styles */
+.auth-page { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 64px); background: linear-gradient(180deg, #f5f7fb 0%, #ffffff 100%); padding: 24px }
+.auth-card { width: 100%; max-width: 420px; background: #fff; border-radius: 10px; box-shadow: 0 8px 30px rgba(31,45,61,0.08); padding: 28px }
+.auth-header h1 { margin: 0 0 6px 0; font-size: 20px }
+.muted { color: #6b7280; font-size: 13px }
+.auth-form { margin-top: 16px }
+.form-row { margin-bottom: 14px }
+.form-row-inline { display: flex; align-items: center; justify-content: space-between }
+.input { padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px }
+.checkbox { display: flex; align-items: center; gap: 8px; font-size: 14px }
+.btn { border: none; border-radius: 8px; padding: 10px 14px; cursor: pointer }
+.btn-primary { background: #2563eb; color: #fff }
+.btn-primary:disabled { opacity: 0.7; cursor: not-allowed }
+.error { color: #b91c1c; background: #fff5f5; padding: 8px 10px; border-radius: 6px; margin-bottom: 8px }
+.link-small { font-size: 13px; color: #2563eb; text-decoration: none }
+.auth-footer { margin-top: 12px; font-size: 12px; text-align: center }

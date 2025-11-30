@@ -6,6 +6,7 @@ import { login } from '../store/authSlice'
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [remember, setRemember] = useState(false)
   const dispatch = useAppDispatch()
   const auth = useAppSelector(s => s.auth)
   const navigate = useNavigate()
@@ -17,26 +18,64 @@ export default function Login() {
       if (res.user.role === 'manager') navigate('/manager')
       else navigate('/employee')
     } catch (err) {
-      // ignore; error in slice
+      // error is handled in slice; keep UI responsive
     }
   }
 
   return (
-    <div style={{ maxWidth: 420, margin: '0 auto' }}>
-      <h2>Login</h2>
-      <form onSubmit={handle}>
-        <div>
-          <label>Email</label>
-          <input value={email} onChange={e => setEmail(e.target.value)} />
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h1>Welcome Back</h1>
+          <p className="muted">Sign in to your account</p>
         </div>
-        <div>
-          <label>Password</label>
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-      {auth.error && <div style={{ color: 'red' }}>{auth.error}</div>}
-      <p>Don't have an account? <Link to="/register">Register</Link></p>
+
+        <form onSubmit={handle} className="auth-form" aria-label="login form">
+          <div className="form-row">
+            <label htmlFor="email">Email address</label>
+            <input
+              id="email"
+              className="input"
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="you@company.com"
+              required
+            />
+          </div>
+
+          <div className="form-row">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              className="input"
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          <div className="form-row form-row-inline">
+            <label className="checkbox">
+              <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} />
+              <span>Remember me</span>
+            </label>
+            <Link to="/register" className="link-small">Create account</Link>
+          </div>
+
+          {auth.error && <div className="error" role="alert">{auth.error}</div>}
+
+          <div className="form-row">
+            <button className="btn btn-primary" type="submit" disabled={auth.loading}>
+              {auth.loading ? 'Signing in...' : 'Sign in'}
+            </button>
+          </div>
+        </form>
+
+        <div className="auth-footer muted">By signing in you agree to your company policies.</div>
+      </div>
     </div>
   )
 }
