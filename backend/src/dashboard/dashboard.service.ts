@@ -29,7 +29,16 @@ export const DashboardService = {
     if (row.check_out_time) checkedOut++;
   });
 
-  const absent = employees.length - todayAttendance.filter((r: any) => r.status).length;
+  // Only count employees who existed today (created_at <= today)
+  const employeesAtToday = employees.filter((e: any) => {
+    try {
+      return moment(e.created_at).isSameOrBefore(today, 'day')
+    } catch (ex) {
+      return true
+    }
+  })
+
+  const absent = employeesAtToday.length - todayAttendance.filter((r: any) => r.status).length;
 
   // 3. Late arrivals list
   const lateArrivalsToday = todayAttendance
@@ -54,7 +63,15 @@ export const DashboardService = {
     const dayAttendance = await AppRepository.getTodayTeamStatus(department, day);
 
     const presentCount = dayAttendance.filter((r: any) => r.status).length;
-    const absentCount = employees.length - presentCount;
+    // consider only employees who existed on that day
+    const employeesAtDay = employees.filter((e: any) => {
+      try {
+        return moment(e.created_at).isSameOrBefore(day, 'day')
+      } catch (ex) {
+        return true
+      }
+    })
+    const absentCount = Math.max(0, employeesAtDay.length - presentCount);
 
     weeklyTrend.push({
       date: day,

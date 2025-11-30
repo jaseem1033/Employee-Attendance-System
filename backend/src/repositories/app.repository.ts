@@ -112,7 +112,7 @@ export const AppRepository = {
 
   async getEmployeesByDepartment(department: string) {
   const res = await pool.query(
-    `SELECT id, name, email, role, employee_id, department 
+    `SELECT id, name, email, role, employee_id, department, created_at 
      FROM users 
      WHERE department = $1 AND role = 'employee'
      ORDER BY name ASC`,
