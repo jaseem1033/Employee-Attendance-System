@@ -41,12 +41,6 @@ What is included
 - Simple Redux Toolkit `auth` slice for login/register
 
 Notes
-- This is a minimal scaffold to get you started. You'll want to add:
-  - Token persistence (localStorage) and attach Authorization header in `client.ts`.
-  - Protected routes and better error handling.
-  - UI improvements and charts for dashboards.
 
-If you want, I can:
-- Add token storage and auto-attach Authorization header.
-- Implement protected route components.
-- Add a sample seed script for frontend demo users.
+
+

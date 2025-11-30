@@ -32,9 +32,16 @@ export const AuthService = {
 
   async login({ email, password }: any) {
   const user = await AppRepository.findUserByEmail(email);
-  if (!user) throw new Error("Invalid credentials");
+  if (!user) {
+    console.log('[auth][login] user not found for email:', email)
+    throw new Error("Invalid credentials");
+  }
+
+  // debug: indicate user found and hash length (do not log full hash or password)
+  console.log('[auth][login] user found:', { id: user.id, email: user.email, hashLength: user.password ? user.password.length : 0 })
 
   const ok = await bcrypt.compare(password, user.password);
+  console.log('[auth][login] bcrypt.compare result for email', email, ':', ok)
   if (!ok) throw new Error("Invalid credentials");
 
   const token = jwt.sign(

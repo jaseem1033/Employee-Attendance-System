@@ -1,5 +1,5 @@
 import React from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import EmployeeDashboard from './pages/EmployeeDashboard'
@@ -13,15 +13,36 @@ import { useAppSelector } from './store/store'
 
 export default function App() {
   const auth = useAppSelector((s) => s.auth)
+  const location = useLocation()
+  const hideNavPaths = ['/login', '/register']
+  const showNav = !hideNavPaths.some(p => location.pathname.startsWith(p))
 
   return (
     <div>
-      <NavBar />
+      {showNav && <NavBar />}
       <main style={{ padding: 20 }}>
         <Routes>
           <Route path="/" element={<Navigate to={auth.user ? (auth.user.role === 'manager' ? '/manager' : '/employee') : '/login'} replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route
+            path="/login"
+            element={
+              auth.user ? (
+                <Navigate to={auth.user.role === 'manager' ? '/manager' : '/employee'} replace />
+              ) : (
+                <Login />
+              )
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              auth.user ? (
+                <Navigate to={auth.user.role === 'manager' ? '/manager' : '/employee'} replace />
+              ) : (
+                <Register />
+              )
+            }
+          />
 
           <Route path="/employee" element={<EmployeeDashboard />} />
           <Route path="/employee/checkin" element={<Checkin />} />

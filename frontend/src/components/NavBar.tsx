@@ -1,11 +1,12 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAppSelector, useAppDispatch } from '../store/store'
 import { logout } from '../store/authSlice'
 
 export default function NavBar() {
   const auth = useAppSelector(s => s.auth)
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
 
   return (
     <nav style={{ padding: 12, borderBottom: '1px solid #ddd' }}>
@@ -36,7 +37,15 @@ export default function NavBar() {
       )}
 
       {auth.user && (
-        <button style={{ marginLeft: 12 }} onClick={() => dispatch(logout())}>Logout</button>
+        <button
+          style={{ marginLeft: 12 }}
+          onClick={() => {
+            dispatch(logout())
+            navigate('/login', { replace: true })
+          }}
+        >
+          Logout
+        </button>
       )}
     </nav>
   )

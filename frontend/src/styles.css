@@ -20,3 +20,13 @@ th { background: #f8f8f8 }
 .error { color: #b91c1c; background: #fff5f5; padding: 8px 10px; border-radius: 6px; margin-bottom: 8px }
 .link-small { font-size: 13px; color: #2563eb; text-decoration: none }
 .auth-footer { margin-top: 12px; font-size: 12px; text-align: center }
+
+/* secondary / outline button for register */
+.btn-outline { background: transparent; border: 1px solid #2563eb; color: #2563eb; padding: 10px 14px; border-radius: 8px; cursor: pointer }
+.btn-row { display:flex; gap:12px; align-items:center }
+.form-title { text-align:center; font-size:16px; font-weight:700; margin-bottom:10px }
+
+/* make form rows comfortable */
+.form-row { margin-bottom: 16px }
+.form-row label { display: block; margin-bottom: 6px; font-weight: 600; color: #0f1724 }
+
