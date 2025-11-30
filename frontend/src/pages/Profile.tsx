@@ -36,36 +36,51 @@ export default function Profile() {
   if (loading) return <div>Loading profile…</div>
   if (error) return <div className="error" role="alert">{error}</div>
   if (!user) return <div>No user data</div>
-
   return (
-    <div>
-      <h2 style={{ marginTop: 0 }}>Profile</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, maxWidth: 720 }}>
-        <div>
-          <div style={{ color: '#6b7280', fontSize: 13 }}>Name</div>
-          <div style={{ fontWeight: 700 }}>{user.name}</div>
-        </div>
-        <div>
-          <div style={{ color: '#6b7280', fontSize: 13 }}>Email</div>
-          <div>{user.email}</div>
-        </div>
-
-        <div>
-          <div style={{ color: '#6b7280', fontSize: 13 }}>Role</div>
-          <div>{user.role}</div>
-        </div>
-        <div>
-          <div style={{ color: '#6b7280', fontSize: 13 }}>Employee ID</div>
-          <div>{user.employeeId || (user as any).employee_id || '-'}</div>
+    <div className="profile-page">
+      <div className="profile-card card">
+        <div className="profile-header">
+          <div className="avatar-large" aria-hidden>
+            {(user.name || 'U').split(' ').map(n => n[0]).slice(0,2).join('')}
+          </div>
+          <div className="profile-title">
+            <h2 className="title">Profile</h2>
+            <div className="subtitle muted">Manage your account details</div>
+          </div>
         </div>
 
-        <div>
-          <div style={{ color: '#6b7280', fontSize: 13 }}>Department</div>
-          <div>{user.department || '-'}</div>
-        </div>
-        <div>
-          <div style={{ color: '#6b7280', fontSize: 13 }}>Created At</div>
-          <div>{user.created_at ? new Date(user.created_at).toLocaleString() : '-'}</div>
+        <div className="profile-body">
+          <div className="kv-grid">
+            <div className="kv">
+              <div className="kv-label">Name</div>
+              <div className="kv-value kv-important">{user.name}</div>
+            </div>
+
+            <div className="kv">
+              <div className="kv-label">Email</div>
+              <div className="kv-value kv-important">{user.email}</div>
+            </div>
+
+            <div className="kv">
+              <div className="kv-label">Role</div>
+              <div className="kv-value">{user.role}</div>
+            </div>
+
+            <div className="kv">
+              <div className="kv-label">Employee ID</div>
+              <div className="kv-value">{user.employeeId || (user as any).employee_id || '-'}</div>
+            </div>
+
+            <div className="kv">
+              <div className="kv-label">Department</div>
+              <div className="kv-value">{user.department || '-'}</div>
+            </div>
+
+            <div className="kv">
+              <div className="kv-label">Created At</div>
+              <div className="kv-value">{user.created_at ? new Date(user.created_at).toLocaleString() : '-'}</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
