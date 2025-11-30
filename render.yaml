@@ -15,7 +15,9 @@ services:
     # When `root: backend` is set, commands run inside that directory. Avoid
     # using `cd backend` here because it will try to `cd` into a non-existent
     # nested folder (backend/backend) and fail. Use direct npm commands.
-    buildCommand: npm ci && npm run build
+    # Install devDependencies during build so TypeScript type packages
+    # (e.g. @types/express, @types/node) are available for `tsc`.
+    buildCommand: npm ci --include=dev && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
 
