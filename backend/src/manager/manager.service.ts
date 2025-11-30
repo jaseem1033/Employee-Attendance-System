@@ -85,63 +85,56 @@ export const ManagerService = {
   },
 
   // -------------------- CSV EXPORT (CORRECTED FULL LOGIC) --------------------
-  async getCSV(department: string) {
-    const start = moment().startOf("month").format("YYYY-MM-DD");
-    const end = moment().endOf("month").format("YYYY-MM-DD");
+  async getCSV(department: string, start?: string, end?: string, employeeId?: number) {
+    const startDate = start || moment().startOf("month").format("YYYY-MM-DD");
+    const endDate = end || moment().endOf("month").format("YYYY-MM-DD");
 
-    // 1) All employees in department
-    const employees = await AppRepository.getEmployeesByDepartment(department);
+    // 1) All employees in department (or specific employee if employeeId provided)
+    let employees = await AppRepository.getEmployeesByDepartment(department);
+    if (employeeId) {
+      employees = employees.filter((e: any) => e.id === employeeId);
+    }
 
     // 2) All attendance rows in date range
     const attendance = await AppRepository.getDepartmentAttendanceForCSV(
       department,
-      start,
-      end
+      startDate,
+      endDate
     );
 
-    // 3) Generate all dates in this month
+    // 3) Generate all dates in the requested range
     const dates: string[] = [];
-    let d = moment(start);
-    while (d.isSameOrBefore(end)) {
+    let d = moment(startDate);
+    while (d.isSameOrBefore(endDate)) {
       dates.push(d.format("YYYY-MM-DD"));
       d = d.add(1, "day");
     }
 
-    // 4) Build final CSV rows (every employee x every date)
-    const csvRows: any[] = [];
+    // 4) Build final rows (every employee x every date)
+    const rows: any[] = [];
 
     for (const emp of employees) {
       for (const date of dates) {
-        // 🔥 CORRECT MATCHING LOGIC:
-        // attendance.user_id === employee.id  
         const row = attendance.find(
-          (a: any) =>
-            a.user_id === emp.id &&
-            moment(a.date).format("YYYY-MM-DD") === date
+          (a: any) => a.user_id === emp.id && moment(a.date).format("YYYY-MM-DD") === date
         );
 
         if (row) {
-          // Present / late / halfDay / checked_out
-          csvRows.push({
+          rows.push({
             name: emp.name,
             employee_id: emp.employee_id,
             date,
             status: row.status,
             check_in_time: row.check_in_time
-              ? moment(row.check_in_time)
-                  .tz("Asia/Kolkata")
-                  .format("YYYY-MM-DD HH:mm:ss")
+              ? moment(row.check_in_time).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss")
               : "",
             check_out_time: row.check_out_time
-              ? moment(row.check_out_time)
-                  .tz("Asia/Kolkata")
-                  .format("YYYY-MM-DD HH:mm:ss")
+              ? moment(row.check_out_time).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss")
               : "",
             total_hours: row.total_hours ?? "",
           });
         } else {
-          // Absent user
-          csvRows.push({
+          rows.push({
             name: emp.name,
             employee_id: emp.employee_id,
             date,
@@ -153,9 +146,8 @@ export const ManagerService = {
         }
       }
     }
-console.log("ATTENDANCE ROWS:", attendance);
 
-    return csvRows;
+    return rows;
   },
   async getDashboard(department: string) {
   const today = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");

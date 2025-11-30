@@ -56,13 +56,23 @@ export const getSummary = async (req: Request, res: Response) => {
 export const exportCSV = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
-    const rows = await ManagerService.getCSV(user.department);
+    // accept optional query params: start, end, employeeId, format
+    const start = (req.query.start as string) || undefined;
+    const end = (req.query.end as string) || undefined;
+    const employeeId = req.query.employeeId ? parseInt(req.query.employeeId as string) : undefined;
+    const format = (req.query.format as string) || 'csv'
+
+    const rows = await ManagerService.getCSV(user.department, start, end, employeeId);
+
+    if (format === 'json') {
+      return res.json(rows);
+    }
 
     let csv = "Name,Employee ID,Date,Status,Check In,Check Out,Total Hours\n";
 
     rows.forEach((r: any) => {
-  csv += `${r.name},${r.employee_id},${r.date},${r.status},${r.check_in_time || ""},${r.check_out_time || ""},${r.total_hours || ""}\n`;
-});
+      csv += `${r.name},${r.employee_id},${r.date},${r.status},${r.check_in_time || ""},${r.check_out_time || ""},${r.total_hours || ""}\n`;
+    });
 
     res.setHeader("Content-Type", "text/csv");
     res.setHeader("Content-Disposition", "attachment; filename=attendance.csv");

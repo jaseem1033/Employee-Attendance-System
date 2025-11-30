@@ -9,6 +9,7 @@ import Checkin from './pages/Checkin'
 import MyHistory from './pages/MyHistory'
 import MySummary from './pages/MySummary'
 import AllAttendance from './pages/AllAttendance'
+import ManagerReports from './pages/ManagerReports'
 import NavBar from './components/NavBar'
 import { useAppSelector } from './store/store'
 
@@ -53,6 +54,7 @@ export default function App() {
 
           <Route path="/manager" element={<ManagerDashboard />} />
           <Route path="/manager/all" element={<AllAttendance />} />
+          <Route path="/manager/reports" element={<ManagerReports />} />
 
         </Routes>
       </main>
