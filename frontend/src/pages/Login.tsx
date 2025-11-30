@@ -47,10 +47,12 @@ export default function Login() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <div className="form-title">Employee Attendance System</div>
-        <div className="auth-header" style={{ textAlign: 'left', marginBottom: 8 }}>
-          <h1>Welcome Back</h1>
-          <p className="muted">Sign in to your account</p>
+        <div className="auth-top">
+          <div className="system-title">Employee Attendance System</div>
+          <div className="auth-header" style={{ textAlign: 'left', marginBottom: 8 }}>
+            <h1>Welcome Back</h1>
+            <p className="muted auth-sub">Sign in to your account</p>
+          </div>
         </div>
 
         <form onSubmit={handle} className="auth-form" aria-label="login form" noValidate>
