@@ -25,7 +25,7 @@ export default function NavBar() {
 
         {auth.user && auth.user.role === 'employee' && (
           <>
-            {/* Employee links removed: Dashboard and History are intentionally hidden */}
+            <Link to="/employee/history">Attendance History</Link>
           </>
         )}
 

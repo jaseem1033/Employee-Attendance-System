@@ -155,6 +155,6 @@ export const EmployeeService = {
     monthlySummary,
     history: formattedHistory
   };
- }
+}
 
 };

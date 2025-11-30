@@ -7,6 +7,7 @@ import ManagerDashboard from './pages/ManagerDashboard'
 import Profile from './pages/Profile'
 import Checkin from './pages/Checkin'
 import MyHistory from './pages/MyHistory'
+import AttendanceHistory from './pages/AttendanceHistory'
 import MySummary from './pages/MySummary'
 import AllAttendance from './pages/AllAttendance'
 import ManagerReports from './pages/ManagerReports'
@@ -48,7 +49,7 @@ export default function App() {
 
           <Route path="/employee" element={<EmployeeDashboard />} />
           <Route path="/employee/checkin" element={<Checkin />} />
-          <Route path="/employee/history" element={<MyHistory />} />
+          <Route path="/employee/history" element={<AttendanceHistory />} />
           <Route path="/employee/summary" element={<MySummary />} />
           <Route path="/profile" element={<Profile />} />
 
