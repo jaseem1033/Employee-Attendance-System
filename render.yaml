@@ -12,8 +12,11 @@ services:
     region: oregon
     plan: free
     root: backend
-    buildCommand: cd backend && npm ci && npm run build
-    startCommand: cd backend && npm start
+    # When `root: backend` is set, commands run inside that directory. Avoid
+    # using `cd backend` here because it will try to `cd` into a non-existent
+    # nested folder (backend/backend) and fail. Use direct npm commands.
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
     healthCheckPath: /api/health
 
   - type: static
@@ -22,8 +25,12 @@ services:
     region: oregon
     plan: free
     root: frontend
-    buildCommand: cd frontend && npm ci && npm run build
-    staticPublishPath: frontend/dist
+    # Same pattern: Render will run commands inside `frontend` when
+    # `root: frontend` is set, so avoid `cd frontend` here.
+    buildCommand: npm ci && npm run build
+    # Publish path should be relative to the service root (frontend), so
+    # it's just `dist`.
+    staticPublishPath: dist
 
 databases:
   - name: attendance-db
