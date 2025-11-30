@@ -31,7 +31,6 @@ export default function EmployeeDashboard() {
       <div style={{ marginTop: 26, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         <Link to="/employee/checkin"><button className="btn btn-primary">Mark Attendance</button></Link>
         <Link to="/employee/history"><button className="btn btn-outline">View My Attendance History</button></Link>
-        <Link to="/employee/summary"><button className="btn btn-outline">View Monthly Summary</button></Link>
       </div>
     </div>
   )
