@@ -33,10 +33,12 @@ export default function EmployeeDashboard() {
       present: '-',
       absent: '-',
       late: '-',
-      totalHours: '-'
+      totalHours: '-',
+      todayStatusType: 'unknown'
     }
 
     const today = dashboard.todayStatus?.status ? dashboard.todayStatus.status.replace('_', ' ') : 'Not checked in'
+    const todayStatusType = dashboard.todayStatus?.status?.toLowerCase() || 'unknown'
 
     const monthly = dashboard.monthlySummary || {}
 
@@ -52,34 +54,58 @@ export default function EmployeeDashboard() {
       present: monthly.present ?? 0,
       absent: monthly.absent ?? 0,
       late: monthly.late ?? 0,
-      totalHours: `${totalHours}h`
+      totalHours: `${totalHours}h`,
+      todayStatusType
     }
   }, [dashboard, loadingDashboard])
 
-  return (
-    <div className="dashboard">
-      <div className="dashboard-header">
-        <div>
-          <div className="dashboard-title">Employee Dashboard</div>
-          <div className="dashboard-sub muted">Welcome back{auth.user ? `, ${auth.user.name}` : ''}</div>
-        </div>
+  const getStatusBadgeClass = (status: string) => {
+    const lower = status.toLowerCase()
+    if (lower.includes('present') || lower.includes('checked_in')) return 'status-present'
+    if (lower.includes('absent')) return 'status-absent'
+    if (lower.includes('late')) return 'status-late'
+    return 'status-unknown'
+  }
 
-        <div className="actions">
-          <Link to="/employee/checkin"><button className="btn btn-primary">Mark Attendance</button></Link>
+  return (
+    <div className="employee-dashboard">
+      {/* Header Section */}
+      <div className="dashboard-hero">
+        <div className="hero-content">
+          <div className="hero-greeting">
+            <h1 className="hero-title">Welcome back{auth.user ? `, ${auth.user.name?.split(' ')[0]}` : ''}</h1>
+            <p className="hero-subtitle">Here's your attendance overview for today</p>
+          </div>
+          <div className="hero-actions">
+            <Link to="/employee/checkin" className="btn-action btn-action-primary">
+              <span className="btn-icon">📅</span>
+              <span>Mark Attendance</span>
+            </Link>
+            <Link to="/employee/history" className="btn-action btn-action-secondary">
+              <span className="btn-icon">📊</span>
+              <span>View History</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="quick-actions-section">
+        <h2 className="section-title">Quick Actions</h2>
+        <div className="quick-actions-grid">
           <button
-            className="btn btn-primary"
+            className="quick-action-btn quick-action-checkin"
             onClick={async () => {
               setLoading(true)
               try {
                 await client.post('/attendance/checkin', {})
-                setMessage('Checked in')
-                // refresh dashboard after successful checkin
+                setMessage('Successfully checked in!')
                 await loadDashboard()
               } catch (err: any) {
                 const apiMsg = err?.response?.data?.error || err?.response?.data?.message || ''
                 const lower = (apiMsg || '').toLowerCase()
                 if (lower.includes('already checked in')) setMessage('You have already checked in today')
-                else setMessage(apiMsg || 'Error')
+                else setMessage(apiMsg || 'Error checking in')
               } finally {
                 setLoading(false)
                 setTimeout(() => setMessage(''), 3500)
@@ -87,24 +113,27 @@ export default function EmployeeDashboard() {
             }}
             disabled={loading}
           >
-            Quick Check In
+            <div className="quick-action-icon">✓</div>
+            <div className="quick-action-content">
+              <div className="quick-action-label">Check In</div>
+              <div className="quick-action-desc">Start your work day</div>
+            </div>
           </button>
 
           <button
-            className="btn btn-primary"
+            className="quick-action-btn quick-action-checkout"
             onClick={async () => {
               setLoading(true)
               try {
                 await client.post('/attendance/checkout', {})
-                setMessage('Checked out')
-                // refresh dashboard after successful checkout
+                setMessage('Successfully checked out!')
                 await loadDashboard()
               } catch (err: any) {
                 const apiMsg = err?.response?.data?.error || err?.response?.data?.message || ''
                 const lower = (apiMsg || '').toLowerCase()
                 if (lower.includes('already checked out')) setMessage('You have already checked out today')
                 else if (lower.includes('have not checked in')) setMessage('You have not checked in today')
-                else setMessage(apiMsg || 'Error')
+                else setMessage(apiMsg || 'Error checking out')
               } finally {
                 setLoading(false)
                 setTimeout(() => setMessage(''), 3500)
@@ -112,86 +141,147 @@ export default function EmployeeDashboard() {
             }}
             disabled={loading}
           >
-            Quick Check Out
+            <div className="quick-action-icon">✓</div>
+            <div className="quick-action-content">
+              <div className="quick-action-label">Check Out</div>
+              <div className="quick-action-desc">End your work day</div>
+            </div>
           </button>
-
-          <Link to="/employee/history"><button className="btn btn-primary">View My Attendance History</button></Link>
         </div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card stat-present">
-          <div className="stat-icon">✓</div>
-          <div className="stat-content">
-            <div className="stat-label">Today's status</div>
-            <div className="stat-value">{stats.todayStatus}</div>
-          </div>
-        </div>
-
-        <div className="stat-card stat-present">
-          <div className="stat-icon">●</div>
-          <div className="stat-content">
-            <div className="stat-label">Present this month</div>
-            <div className="stat-value">{stats.present}</div>
-          </div>
-        </div>
-
-        <div className="stat-card stat-absent">
-          <div className="stat-icon">✕</div>
-          <div className="stat-content">
-            <div className="stat-label">Absent this month</div>
-            <div className="stat-value">{stats.absent}</div>
-          </div>
-        </div>
-
-        <div className="stat-card stat-late">
-          <div className="stat-icon">!</div>
-          <div className="stat-content">
-            <div className="stat-label">Late this month</div>
-            <div className="stat-value">{stats.late}</div>
-          </div>
-        </div>
-
-        <div className="stat-card stat-hours">
-          <div className="stat-icon">🕒</div>
-          <div className="stat-content">
-            <div className="stat-label">Total hours (month)</div>
-            <div className="stat-value">{stats.totalHours}</div>
-          </div>
-        </div>
-      </div>
-
+      {/* Message Alert */}
       {message && (
-        <div style={{ marginTop: 4, color: message.toLowerCase().includes('error') ? 'red' : 'green' }}>{message}</div>
+        <div className={`alert-message ${message.toLowerCase().includes('error') || message.toLowerCase().includes('already') || message.toLowerCase().includes('not checked') ? 'alert-error' : 'alert-success'}`}>
+          <span className="alert-icon">{message.toLowerCase().includes('error') || message.toLowerCase().includes('already') || message.toLowerCase().includes('not checked') ? '⚠️' : '✓'}</span>
+          <span>{message}</span>
+        </div>
       )}
 
-      <div>
-        <h3 style={{ marginBottom: 8 }}>Recent History</h3>
-        {loadingDashboard && <div>Loading history…</div>}
-        {!loadingDashboard && dashboard && Array.isArray(dashboard.history) && (
-          <div className="card history-card">
-            <table className="history-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Check In</th>
-                  <th>Check Out</th>
-                  <th>Total Hours</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dashboard.history.map((r: any) => (
-                  <tr key={r.date + (r.checkInTime || r.check_in_time || '')}>
-                    <td>{r.date}</td>
-                    <td>{r.status}</td>
-                    <td>{r.checkInTime ?? r.check_in_time}</td>
-                    <td>{r.checkOutTime ?? r.check_out_time}</td>
-                    <td>{r.totalHours ?? r.total_hours}</td>
+      {/* Statistics Cards */}
+      <div className="stats-section">
+        <h2 className="section-title">Monthly Overview</h2>
+        <div className="stats-grid-modern">
+          <div className="stat-card-modern stat-card-today">
+            <div className="stat-card-header">
+              <div className="stat-card-icon stat-icon-today">
+                <span>📌</span>
+              </div>
+              <div className="stat-card-badge">
+                <span className={`status-badge ${getStatusBadgeClass(stats.todayStatus)}`}>
+                  {stats.todayStatus}
+                </span>
+              </div>
+            </div>
+            <div className="stat-card-body">
+              <div className="stat-card-label">Today's Status</div>
+              <div className="stat-card-value">{stats.todayStatus}</div>
+            </div>
+          </div>
+
+          <div className="stat-card-modern stat-card-present">
+            <div className="stat-card-header">
+              <div className="stat-card-icon stat-icon-present">
+                <span>✓</span>
+              </div>
+            </div>
+            <div className="stat-card-body">
+              <div className="stat-card-label">Present Days</div>
+              <div className="stat-card-value">{stats.present}</div>
+              <div className="stat-card-sublabel">This month</div>
+            </div>
+          </div>
+
+          <div className="stat-card-modern stat-card-absent">
+            <div className="stat-card-header">
+              <div className="stat-card-icon stat-icon-absent">
+                <span>✕</span>
+              </div>
+            </div>
+            <div className="stat-card-body">
+              <div className="stat-card-label">Absent Days</div>
+              <div className="stat-card-value">{stats.absent}</div>
+              <div className="stat-card-sublabel">This month</div>
+            </div>
+          </div>
+
+          <div className="stat-card-modern stat-card-late">
+            <div className="stat-card-header">
+              <div className="stat-card-icon stat-icon-late">
+                <span>⏰</span>
+              </div>
+            </div>
+            <div className="stat-card-body">
+              <div className="stat-card-label">Late Arrivals</div>
+              <div className="stat-card-value">{stats.late}</div>
+              <div className="stat-card-sublabel">This month</div>
+            </div>
+          </div>
+
+          <div className="stat-card-modern stat-card-hours">
+            <div className="stat-card-header">
+              <div className="stat-card-icon stat-icon-hours">
+                <span>🕒</span>
+              </div>
+            </div>
+            <div className="stat-card-body">
+              <div className="stat-card-label">Total Hours</div>
+              <div className="stat-card-value">{stats.totalHours}</div>
+              <div className="stat-card-sublabel">This month</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent History */}
+      <div className="history-section">
+        <div className="section-header">
+          <h2 className="section-title">Recent Attendance History</h2>
+          <Link to="/employee/history" className="view-all-link">View All →</Link>
+        </div>
+        
+        {loadingDashboard ? (
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+            <span>Loading history…</span>
+          </div>
+        ) : dashboard && Array.isArray(dashboard.history) && dashboard.history.length > 0 ? (
+          <div className="history-card-modern">
+            <div className="table-container">
+              <table className="history-table-modern">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Total Hours</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {dashboard.history.slice(0, 10).map((r: any, idx: number) => (
+                    <tr key={r.date + (r.checkInTime || r.check_in_time || '') + idx}>
+                      <td className="td-date-modern">
+                        <div className="date-display">{r.date}</div>
+                      </td>
+                      <td>
+                        <span className={`status-badge ${getStatusBadgeClass(r.status || 'unknown')}`}>
+                          {r.status || 'N/A'}
+                        </span>
+                      </td>
+                      <td className="td-time">{r.checkInTime ?? r.check_in_time ?? '-'}</td>
+                      <td className="td-time">{r.checkOutTime ?? r.check_out_time ?? '-'}</td>
+                      <td className="td-hours">{r.totalHours ?? r.total_hours ?? '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          <div className="empty-state">
+            <div className="empty-icon">📋</div>
+            <p className="empty-text">No attendance history available</p>
           </div>
         )}
       </div>
