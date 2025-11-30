@@ -32,11 +32,10 @@ export const EmployeeService = {
       status = "late";
     }
 
-    // Insert attendance
+    // Insert attendance (use DB clock for check_in_time)
     await AppRepository.createCheckIn({
       userId: user.id,
       date: today,
-      checkInTime: now.format("YYYY-MM-DD HH:mm:ss"),
       status,
     });
 
@@ -56,17 +55,9 @@ export const EmployeeService = {
     if (!record) throw new Error("You have not checked in today");
     if (record.check_out_time) throw new Error("Already checked out today");
 
-    const now = moment().tz("Asia/Kolkata");
-    const checkInTime = moment(record.check_in_time).tz("Asia/Kolkata");
-
-    const totalHours = parseFloat(
-      now.diff(checkInTime, "hours", true).toFixed(2)
-    );
-
+    // Use DB to set check_out_time and compute total_hours (AppRepository handles this)
     await AppRepository.updateCheckOut({
       attendanceId: record.id,
-      checkOutTime: now.format("YYYY-MM-DD HH:mm:ss"),
-      totalHours,
     });
 
     return; // 204
@@ -97,11 +88,12 @@ export const EmployeeService = {
 
     return {
       status: record.check_out_time ? "checked_out" : "checked_in",
-      checkInTime: moment(record.check_in_time)
+      // Parse stored timestamptz preserving offset, then display in Asia/Kolkata
+      checkInTime: moment.parseZone(record.check_in_time)
         .tz("Asia/Kolkata")
         .format("YYYY-MM-DD HH:mm:ss"),
       checkOutTime: record.check_out_time
-        ? moment(record.check_out_time)
+        ? moment.parseZone(record.check_out_time)
             .tz("Asia/Kolkata")
             .format("YYYY-MM-DD HH:mm:ss")
         : null,
