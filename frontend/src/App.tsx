@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import EmployeeDashboard from './pages/EmployeeDashboard'
 import ManagerDashboard from './pages/ManagerDashboard'
+import Profile from './pages/Profile'
 import Checkin from './pages/Checkin'
 import MyHistory from './pages/MyHistory'
 import MySummary from './pages/MySummary'
@@ -20,7 +21,7 @@ export default function App() {
   return (
     <div>
       {showNav && <NavBar />}
-      <main style={{ padding: 20 }}>
+      <main style={{ padding: 20, maxWidth: 1100, margin: '32px auto' }}>
         <Routes>
           <Route path="/" element={<Navigate to={auth.user ? (auth.user.role === 'manager' ? '/manager' : '/employee') : '/login'} replace />} />
           <Route
@@ -48,6 +49,7 @@ export default function App() {
           <Route path="/employee/checkin" element={<Checkin />} />
           <Route path="/employee/history" element={<MyHistory />} />
           <Route path="/employee/summary" element={<MySummary />} />
+          <Route path="/profile" element={<Profile />} />
 
           <Route path="/manager" element={<ManagerDashboard />} />
           <Route path="/manager/all" element={<AllAttendance />} />
