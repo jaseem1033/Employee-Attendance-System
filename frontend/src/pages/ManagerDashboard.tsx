@@ -38,59 +38,70 @@ export default function ManagerDashboard() {
   }, [dashboard])
 
   return (
-    <div>
-      <h2 style={{ marginTop: 0 }}>Manager Dashboard</h2>
-      <p style={{ color: '#6b7280' }}>Overview for managers{auth.user ? ` — ${auth.user.name}` : ''}</p>
+    <div className="manager-dashboard">
+      <div className="manager-header">
+        <div>
+          <h2 className="manager-title">Manager Dashboard</h2>
+          <div className="muted manager-sub">Overview for managers{auth.user ? ` — ${auth.user.name}` : ''}</div>
+        </div>
+        <div className="manager-actions">
+          <Link to="/manager/all"><button className="btn btn-primary">View All Attendance</button></Link>
+          <Link to="/manager/reports"><button className="btn btn-outline">Reports</button></Link>
+        </div>
+      </div>
 
-      <div style={{ display: 'flex', gap: 16, marginTop: 18, flexWrap: 'wrap' }}>
+      <div className="stats-grid">
         <DashboardCard title="Total employees" value={stats.totalEmployees} />
         <DashboardCard title="Present today" value={stats.presentToday} />
         <DashboardCard title="Absent today" value={stats.absentToday} />
         <DashboardCard title="Late today" value={stats.lateToday} />
       </div>
 
-      <div style={{ marginTop: 26 }}>
-        <Link to="/manager/all"><button className="btn btn-primary">View All Attendance</button></Link>
-        <Link to="/manager/reports" style={{ marginLeft: 12 }}><button className="btn btn-outline">Reports</button></Link>
-      </div>
+      <div className="sections">
+        <div className="section-card card">
+          <h3 className="section-title">Late Arrivals Today</h3>
+          {loading && <div>Loading…</div>}
+          {!loading && dashboard && Array.isArray(dashboard.lateArrivalsToday) && dashboard.lateArrivalsToday.length === 0 && (
+            <div>No late arrivals today</div>
+          )}
+          {!loading && dashboard && Array.isArray(dashboard.lateArrivalsToday) && dashboard.lateArrivalsToday.length > 0 && (
+            <ul className="person-list">
+              {dashboard.lateArrivalsToday.map((p: any) => (
+                <li key={p.employee_id}><span className="person-name">{p.name}</span> <span className="person-id">{p.employee_id}</span></li>
+              ))}
+            </ul>
+          )}
+        </div>
 
-      <div style={{ marginTop: 28 }}>
-        <h3 style={{ marginBottom: 8 }}>Late Arrivals Today</h3>
-        {loading && <div>Loading…</div>}
-        {!loading && dashboard && Array.isArray(dashboard.lateArrivalsToday) && dashboard.lateArrivalsToday.length === 0 && (
-          <div>No late arrivals today</div>
-        )}
-        {!loading && dashboard && Array.isArray(dashboard.lateArrivalsToday) && dashboard.lateArrivalsToday.length > 0 && (
-          <ul>
-            {dashboard.lateArrivalsToday.map((p: any) => (
-              <li key={p.employee_id}>{p.name} — {p.employee_id}</li>
-            ))}
-          </ul>
-        )}
+        <div className="section-card card">
+          <h3 className="section-title">Weekly Trend (last 7 days)</h3>
+          {!loading && dashboard && Array.isArray(dashboard.weeklyTrend) && (
+            <WeeklyTrendChart data={dashboard.weeklyTrend} />
+          )}
+        </div>
 
-        {/* Absent Today moved to bottom */}
+        <div className="section-row">
+          <div className="section-card card half">
+            <h3 className="section-title">Department-wise Attendance (today)</h3>
+            {!loading && dashboard && Array.isArray(dashboard.departmentWiseAttendance) && (
+              <DepartmentAttendanceChart data={dashboard.departmentWiseAttendance} />
+            )}
+          </div>
 
-        <h3 style={{ marginTop: 16, marginBottom: 8 }}>Weekly Trend (last 7 days)</h3>
-        {!loading && dashboard && Array.isArray(dashboard.weeklyTrend) && (
-          <WeeklyTrendChart data={dashboard.weeklyTrend} />
-        )}
-
-        <h3 style={{ marginTop: 20, marginBottom: 8 }}>Department-wise Attendance (today)</h3>
-        {!loading && dashboard && Array.isArray(dashboard.departmentWiseAttendance) && (
-          <DepartmentAttendanceChart data={dashboard.departmentWiseAttendance} />
-        )}
-        
-        <h3 style={{ marginTop: 20, marginBottom: 8 }}>Absent Today</h3>
-        {!loading && dashboard && Array.isArray(dashboard.absentToday) && dashboard.absentToday.length === 0 && (
-          <div>No absentees today</div>
-        )}
-        {!loading && dashboard && Array.isArray(dashboard.absentToday) && dashboard.absentToday.length > 0 && (
-          <ul>
-            {dashboard.absentToday.map((p: any) => (
-              <li key={p.employee_id}>{p.name} — {p.employee_id}</li>
-            ))}
-          </ul>
-        )}
+          <div className="section-card card half">
+            <h3 className="section-title">Absent Today</h3>
+            {!loading && dashboard && Array.isArray(dashboard.absentToday) && dashboard.absentToday.length === 0 && (
+              <div>No absentees today</div>
+            )}
+            {!loading && dashboard && Array.isArray(dashboard.absentToday) && dashboard.absentToday.length > 0 && (
+              <ul className="person-list">
+                {dashboard.absentToday.map((p: any) => (
+                  <li key={p.employee_id}><span className="person-name">{p.name}</span> <span className="person-id">{p.employee_id}</span></li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )

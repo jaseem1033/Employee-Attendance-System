@@ -152,3 +152,29 @@ th { background: #f8f8f8 }
 	.profile-title .title { font-size:18px }
 }
 
+/* Manager dashboard styles */
+.manager-dashboard { display:flex; flex-direction:column; gap:20px }
+.manager-header { display:flex; justify-content:space-between; align-items:center; gap:16px }
+.manager-title { margin:0; font-size:20px; font-weight:800 }
+.manager-sub { color:#6b7280 }
+.manager-actions { display:flex; gap:12px }
+
+.stats-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-top:8px }
+
+.sections { display:flex; flex-direction:column; gap:18px; margin-top:6px }
+.section-card { padding:16px }
+.section-title { margin:0 0 10px 0; font-size:16px; font-weight:800; color:#0f1724 }
+
+.section-row { display:grid; grid-template-columns: 1fr 1fr; gap:16px }
+.section-card.half { padding:14px }
+
+.person-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px }
+.person-list li { display:flex; justify-content:space-between; gap:12px; padding:8px 10px; border-radius:8px; background:#fbfdff }
+.person-name { font-weight:700 }
+.person-id { color:#6b7280; font-size:13px }
+
+@media (max-width:880px) {
+  .section-row { grid-template-columns: 1fr }
+}
+
+
