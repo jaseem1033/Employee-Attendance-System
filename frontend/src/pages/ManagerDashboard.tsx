@@ -45,7 +45,6 @@ export default function ManagerDashboard() {
           <div className="muted manager-sub">Overview for managers{auth.user ? ` — ${auth.user.name}` : ''}</div>
         </div>
         <div className="manager-actions">
-          <Link to="/manager/all"><button className="btn btn-primary">View All Attendance</button></Link>
           <Link to="/manager/reports"><button className="btn btn-outline">Reports</button></Link>
         </div>
       </div>

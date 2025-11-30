@@ -24,17 +24,9 @@ export default function NavBar() {
           </>
         )}
 
-        {auth.user && auth.user.role === 'employee' && (
-          <>
-            <Link to="/employee/history" className="nav-link">Attendance History</Link>
-          </>
-        )}
+        {/* Attendance History removed from navbar for employees per request */}
 
-        {auth.user && auth.user.role === 'manager' && (
-          <>
-            <Link to="/manager/reports" className="nav-link">Reports</Link>
-          </>
-        )}
+        {/* Reports link removed from navbar per request */}
 
         {auth.user && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
