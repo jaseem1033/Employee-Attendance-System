@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import client from '../api/client'
 
 function monthKey(d: Date) {
@@ -21,6 +22,7 @@ function formatDateYMD(d: Date) {
 }
 
 export default function AttendanceHistory() {
+  const navigate = useNavigate()
   const [history, setHistory] = useState<any[]>([])
   const [monthDate, setMonthDate] = useState<Date>(() => startOfMonth(new Date()))
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
@@ -115,7 +117,10 @@ export default function AttendanceHistory() {
 
   return (
     <div className="calendar">
-      <h2>Attendance History (Calendar)</h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button className="btn btn-outline" onClick={() => navigate(-1)} aria-label="Go back">← Back</button>
+        <h2 style={{ margin: 0 }}>Attendance History (Calendar)</h2>
+      </div>
 
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 12 }}>
         <button onClick={prevMonth} className="btn btn-outline">‹</button>
