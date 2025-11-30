@@ -33,18 +33,24 @@ export const AppRepository = {
   },
 
   // ATTENDANCE
-  async createCheckIn({ userId, date, checkInTime, status }: any) {
+  async createCheckIn({ userId, date, status }: any) {
+    // Use DB clock for check_in_time to ensure canonical instants (timestamptz)
     const res = await pool.query(
-      `INSERT INTO attendance (user_id, date, check_in_time, status) VALUES ($1,$2,$3,$4) RETURNING *`,
-      [userId, date, checkInTime, status]
+      `INSERT INTO attendance (user_id, date, check_in_time, status) VALUES ($1, $2, now(), $3) RETURNING *`,
+      [userId, date, status]
     );
     return res.rows[0];
   },
 
-  async updateCheckOut({ attendanceId, checkOutTime, totalHours }: any) {
+  async updateCheckOut({ attendanceId }: any) {
+    // Set check_out_time to DB now() and compute total_hours in SQL (hours, rounded 2 decimals)
     const res = await pool.query(
-      `UPDATE attendance SET check_out_time=$1, total_hours=$2 WHERE id=$3 RETURNING *`,
-      [checkOutTime, totalHours, attendanceId]
+      `UPDATE attendance
+       SET check_out_time = now(),
+           total_hours = ROUND(EXTRACT(EPOCH FROM (now() - check_in_time))/3600::numeric, 2)
+       WHERE id = $1
+       RETURNING *`,
+      [attendanceId]
     );
     return res.rows[0];
   },
