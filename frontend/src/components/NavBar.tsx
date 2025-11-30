@@ -32,7 +32,6 @@ export default function NavBar() {
         {auth.user && auth.user.role === 'manager' && (
           <>
             {/* Manager Dashboard removed from navbar; keep other manager links */}
-            <Link to="/manager/all">All Attendance</Link>
             <Link to="/manager/reports">Reports</Link>
           </>
         )}

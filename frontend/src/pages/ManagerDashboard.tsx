@@ -3,6 +3,8 @@ import DashboardCard from '../components/DashboardCard'
 import { Link } from 'react-router-dom'
 import { useAppSelector } from '../store/store'
 import client from '../api/client'
+import WeeklyTrendChart from '../components/WeeklyTrendChart'
+import DepartmentAttendanceChart from '../components/DepartmentAttendanceChart'
 
 export default function ManagerDashboard() {
   const auth = useAppSelector(s => s.auth)
@@ -66,7 +68,19 @@ export default function ManagerDashboard() {
           </ul>
         )}
 
-        <h3 style={{ marginTop: 16, marginBottom: 8 }}>Absent Today</h3>
+        {/* Absent Today moved to bottom */}
+
+        <h3 style={{ marginTop: 16, marginBottom: 8 }}>Weekly Trend (last 7 days)</h3>
+        {!loading && dashboard && Array.isArray(dashboard.weeklyTrend) && (
+          <WeeklyTrendChart data={dashboard.weeklyTrend} />
+        )}
+
+        <h3 style={{ marginTop: 20, marginBottom: 8 }}>Department-wise Attendance (today)</h3>
+        {!loading && dashboard && Array.isArray(dashboard.departmentWiseAttendance) && (
+          <DepartmentAttendanceChart data={dashboard.departmentWiseAttendance} />
+        )}
+        
+        <h3 style={{ marginTop: 20, marginBottom: 8 }}>Absent Today</h3>
         {!loading && dashboard && Array.isArray(dashboard.absentToday) && dashboard.absentToday.length === 0 && (
           <div>No absentees today</div>
         )}
@@ -76,28 +90,6 @@ export default function ManagerDashboard() {
               <li key={p.employee_id}>{p.name} — {p.employee_id}</li>
             ))}
           </ul>
-        )}
-
-        <h3 style={{ marginTop: 16, marginBottom: 8 }}>Weekly Trend (last 7 days)</h3>
-        {!loading && dashboard && Array.isArray(dashboard.weeklyTrend) && (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Present</th>
-                <th>Absent</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dashboard.weeklyTrend.map((d: any) => (
-                <tr key={d.date}>
-                  <td>{d.date}</td>
-                  <td>{d.present}</td>
-                  <td>{d.absent}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         )}
       </div>
     </div>
