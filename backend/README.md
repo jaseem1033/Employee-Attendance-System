@@ -89,4 +89,3 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 - `src/server.ts` — app bootstrap
 - `src/routes` or `src/controllers` — API handlers
 
-If you'd like, I can also add a `backend/.env.example` showing the expected variables and values (safe defaults).
